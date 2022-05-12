@@ -45,30 +45,36 @@
      <string>PushButton</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="foto">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>120</y>
-      <width>251</width>
-      <height>201</height>
+      <x>10</x>
+      <y>10</y>
+      <width>381</width>
+      <height>331</height>
      </rect>
     </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="foto_2">
     <property name="geometry">
      <rect>
-      <x>520</x>
-      <y>120</y>
-      <width>251</width>
-      <height>201</height>
+      <x>410</x>
+      <y>10</y>
+      <width>371</width>
+      <height>331</height>
      </rect>
     </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string/>
     </property>
    </widget>
   </widget>
@@ -95,7 +101,14 @@
     </property>
     <addaction name="actionSobre"/>
    </widget>
+   <widget class="QMenu" name="menuOpera_es">
+    <property name="title">
+     <string>Operações</string>
+    </property>
+    <addaction name="actionSeparador_RGB"/>
+   </widget>
    <addaction name="menuArquivo"/>
+   <addaction name="menuOpera_es"/>
    <addaction name="menuAjuda"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -117,6 +130,11 @@
   <action name="actionSobre">
    <property name="text">
     <string>Sobre</string>
+   </property>
+  </action>
+  <action name="actionSeparador_RGB">
+   <property name="text">
+    <string>Separador RGB</string>
    </property>
   </action>
  </widget>

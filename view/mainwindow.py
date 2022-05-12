@@ -9,70 +9,81 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QFileDialog
-from PyQt5.QtCore import QStringListModel
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QSizePolicy, QSize, QAction, QWidget, QPushButton, QRect, QLabel, QFrame, QMenu, QMenuBar, QStatusBar
 from PyQt5.Qt import qRed, qGreen, qBlue, qRgb
 import numpy
+import windowrgb
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        if not MainWindow.objectName():
+            MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(800, 600)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setMinimumSize(QtCore.QSize(800, 600))
-        MainWindow.setMaximumSize(QtCore.QSize(800, 600))
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.button1 = QtWidgets.QPushButton(self.centralwidget)
-        self.button1.setGeometry(QtCore.QRect(360, 460, 75, 23))
-        self.button1.setObjectName("button1")
-        self.foto = QtWidgets.QLabel(self.centralwidget)
-        self.foto.setGeometry(QtCore.QRect(30, 120, 251, 201))
-        self.foto.setObjectName("foto")
-        self.foto_2 = QtWidgets.QLabel(self.centralwidget)
-        self.foto_2.setGeometry(QtCore.QRect(520, 120, 251, 201))
-        self.foto_2.setObjectName("foto_2")
+        MainWindow.setMinimumSize(QSize(800, 600))
+        MainWindow.setMaximumSize(QSize(800, 600))
+        self.actionAbrir = QAction(MainWindow)
+        self.actionAbrir.setObjectName(u"actionAbrir")
+        self.actionSalvar = QAction(MainWindow)
+        self.actionSalvar.setObjectName(u"actionSalvar")
+        self.actionSalvar_como = QAction(MainWindow)
+        self.actionSalvar_como.setObjectName(u"actionSalvar_como")
+        self.actionSobre = QAction(MainWindow)
+        self.actionSobre.setObjectName(u"actionSobre")
+        self.actionSeparador_RGB = QAction(MainWindow)
+        self.actionSeparador_RGB.setObjectName(u"actionSeparador_RGB")
+        self.centralwidget = QWidget(MainWindow)
+        self.centralwidget.setObjectName(u"centralwidget")
+        self.button1 = QPushButton(self.centralwidget)
+        self.button1.setObjectName(u"button1")
+        self.button1.setGeometry(QRect(360, 460, 75, 23))
+        self.foto = QLabel(self.centralwidget)
+        self.foto.setObjectName(u"foto")
+        self.foto.setGeometry(QRect(10, 10, 381, 331))
+        self.foto.setFrameShape(QFrame.StyledPanel)
+        self.foto_2 = QLabel(self.centralwidget)
+        self.foto_2.setObjectName(u"foto_2")
+        self.foto_2.setGeometry(QRect(410, 10, 371, 331))
+        self.foto_2.setFrameShape(QFrame.StyledPanel)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
-        self.menubar.setObjectName("menubar")
-        self.menuArquivo = QtWidgets.QMenu(self.menubar)
-        self.menuArquivo.setObjectName("menuArquivo")
-        self.menuAjuda = QtWidgets.QMenu(self.menubar)
-        self.menuAjuda.setObjectName("menuAjuda")
+        self.menubar = QMenuBar(MainWindow)
+        self.menubar.setObjectName(u"menubar")
+        self.menubar.setGeometry(QRect(0, 0, 800, 21))
+        self.menuArquivo = QMenu(self.menubar)
+        self.menuArquivo.setObjectName(u"menuArquivo")
+        self.menuAjuda = QMenu(self.menubar)
+        self.menuAjuda.setObjectName(u"menuAjuda")
+        self.menuOpera_es = QMenu(self.menubar)
+        self.menuOpera_es.setObjectName(u"menuOpera_es")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
+        self.statusbar = QStatusBar(MainWindow)
+        self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.actionAbrir = QtWidgets.QAction(MainWindow)
-        self.actionAbrir.setObjectName("actionAbrir")
-        self.actionSalvar = QtWidgets.QAction(MainWindow)
-        self.actionSalvar.setObjectName("actionSalvar")
-        self.actionSalvar_como = QtWidgets.QAction(MainWindow)
-        self.actionSalvar_como.setObjectName("actionSalvar_como")
-        self.actionSobre = QtWidgets.QAction(MainWindow)
-        self.actionSobre.setObjectName("actionSobre")
+
+        self.menubar.addAction(self.menuArquivo.menuAction())
+        self.menubar.addAction(self.menuOpera_es.menuAction())
+        self.menubar.addAction(self.menuAjuda.menuAction())
         self.menuArquivo.addAction(self.actionAbrir)
         self.menuArquivo.addAction(self.actionSalvar)
         self.menuArquivo.addAction(self.actionSalvar_como)
         self.menuAjuda.addAction(self.actionSobre)
-        self.menubar.addAction(self.menuArquivo.menuAction())
-        self.menubar.addAction(self.menuAjuda.menuAction())
+        self.menuOpera_es.addAction(self.actionSeparador_RGB)
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        
         self.actionAbrir.triggered.connect(self.abrir)
         self.actionSobre.triggered.connect(self.sobre)
+        self.actionSeparador_RGB.triggered.connect(self.rgb)
 
         self.button1.clicked.connect(self.converterCorParaCinza)
         # self.button1.clicked.connect(self.inverterCor)
         # self.button1.clicked.connect(self.apenasVermelho)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -82,25 +93,31 @@ class Ui_MainWindow(object):
         self.foto_2.setText(_translate("MainWindow", ""))
         self.menuArquivo.setTitle(_translate("MainWindow", "Arquivo"))
         self.menuAjuda.setTitle(_translate("MainWindow", "Ajuda"))
+        self.menuOperacoes.setTitle(_translate("MainWindow", "Operações"))
         self.actionAbrir.setText(_translate("MainWindow", "Abrir"))
         self.actionSalvar.setText(_translate("MainWindow", "Salvar"))
-        self.actionSalvar_como.setText(_translate("MainWindow", "Salvar como..."))
+        self.actionSalvar_como.setText(
+            _translate("MainWindow", "Salvar como..."))
         self.actionSobre.setText(_translate("MainWindow", "Sobre"))
+        self.actionSeparador_RGB.setText(
+            _translate("MainWindow", "Separador RGB"))
 
     def abrir(self):
-            dlg = QFileDialog() # cria um dialogo para selecionar o arquivo
-            dlg.setFileMode(QFileDialog.AnyFile) # seleciona qualquer tipo de arquivo
-            # dlg.setFilter("Imagens (*.png *.jpg *.jpeg)") # filtra os arquivos
-            # filenames = list # cria uma lista para armazenar os nomes dos arquivos
+        dlg = QFileDialog()  # cria um dialogo para selecionar o arquivo
+        # seleciona qualquer tipo de arquivo
+        dlg.setFileMode(QFileDialog.AnyFile)
+        # dlg.setFilter("Imagens (*.png *.jpg *.jpeg)") # filtra os arquivos
+        # filenames = list # cria uma lista para armazenar os nomes dos arquivos
 
-            filename = dlg.getOpenFileName() # abre o dialogo e armazena o nome do arquivo
-            self.foto.setPixmap(QtGui.QPixmap(filename[0])) # coloca o conteudo do arquivo na textbox
-            self.foto.setScaledContents(True) # ajusta o tamanho da imagem
+        filename = dlg.getOpenFileName()  # abre o dialogo e armazena o nome do arquivo
+        # coloca o conteudo do arquivo na textbox
+        self.foto.setPixmap(QtGui.QPixmap(filename[0]))
+        self.foto.setScaledContents(True)  # ajusta o tamanho da imagem
 
     def converterCorParaCinza(self):
-        # converts the image to grayscale bitwise using bits(). each pixel is a 3 by 1 vector. the first element is the red value, the second is the green value, and the third is the blue value. the value is between 0 and 255. the value of each element is multiplied by the corresponding weight. the sum of the three values is the final value for that pixel. 
+        # converts the image to grayscale bitwise using bits(). each pixel is a 3 by 1 vector. the first element is the red value, the second is the green value, and the third is the blue value. the value is between 0 and 255. the value of each element is multiplied by the corresponding weight. the sum of the three values is the final value for that pixel.
         # luminancia = (r + g + b) / 3
-        
+
         image = self.foto.pixmap().toImage()
         # arrayptr = image.bits()
         for x in range(image.width()):
@@ -111,7 +128,7 @@ class Ui_MainWindow(object):
                 b = qBlue(pixel)
                 # luminancia = (r + g + b) / 3
                 luminancia = r*0.299 + g*0.587 + b*0.114
-                image.setPixel(x, y, qRgb(luminancia, luminancia, luminancia))
+                image.setPixel(x, y, qRgb(round(luminancia), round(luminancia), round(luminancia))) # TODO É errado isto?
         self.foto_2.setPixmap(QtGui.QPixmap(image))
         self.foto_2.setScaledContents(True)
 
@@ -126,18 +143,58 @@ class Ui_MainWindow(object):
                 image.setPixel(x, y, qRgb(255-r, 255-g, 255-b))
         self.foto_2.setPixmap(QtGui.QPixmap(image))
         self.foto_2.setScaledContents(True)
-        
-    def apenasVermelho(self):
-        image = self.foto.pixmap().toImage()
-        for x in range(image.width()):
-            for y in range(image.height()):
-                pixel = image.pixel(x, y)
+
+    # def apenasVermelho(self):
+    #     image = self.foto.pixmap().toImage()
+    #     for x in range(image.width()):
+    #         for y in range(image.height()):
+    #             pixel = image.pixel(x, y)
+    #             r = qRed(pixel)
+    #             g = qGreen(pixel)
+    #             b = qBlue(pixel)
+    #             image.setPixel(x, y, qRgb(r, 0, 0))
+    #     self.foto_2.setPixmap(QtGui.QPixmap(image))
+    #     self.foto_2.setScaledContents(True)
+
+    def rgb(self):
+        self.Form = QtWidgets.QWidget()
+        rgbWindow = windowrgb.Ui_Form()
+        rgbWindow.setupUi(self.Form)
+
+        imageR = self.foto.pixmap().toImage()
+        for x in range(imageR.width()):
+            for y in range(imageR.height()):
+                pixel = imageR.pixel(x, y)
                 r = qRed(pixel)
                 g = qGreen(pixel)
                 b = qBlue(pixel)
-                image.setPixel(x, y, qRgb(r, 0, 0))
-        self.foto_2.setPixmap(QtGui.QPixmap(image))
-        self.foto_2.setScaledContents(True)
+                imageR.setPixel(x, y, qRgb(r, 0, 0))
+        rgbWindow.foto.setPixmap(QtGui.QPixmap(imageR))
+        rgbWindow.foto.setScaledContents(True)
+        
+        imageG = self.foto.pixmap().toImage()
+        for x in range(imageG.width()):
+            for y in range(imageG.height()):
+                pixel = imageG.pixel(x, y)
+                r = qRed(pixel)
+                g = qGreen(pixel)
+                b = qBlue(pixel)
+                imageG.setPixel(x, y, qRgb(0, g, 0))
+        rgbWindow.foto_2.setPixmap(QtGui.QPixmap(imageG))
+        rgbWindow.foto_2.setScaledContents(True)
+        
+        imageB = self.foto.pixmap().toImage()
+        for x in range(imageB.width()):
+            for y in range(imageB.height()):
+                pixel = imageB.pixel(x, y)
+                r = qRed(pixel)
+                g = qGreen(pixel)
+                b = qBlue(pixel)
+                imageB.setPixel(x, y, qRgb(0, 0, b))
+        rgbWindow.foto_3.setPixmap(QtGui.QPixmap(imageB))
+        rgbWindow.foto_3.setScaledContents(True)
+    
+        self.Form.show()
 
     def sobre(self):
         msg = QMessageBox()
@@ -148,8 +205,8 @@ class Ui_MainWindow(object):
         # msg.setDefaultButton(QMessageBox.Ok)
         msg.setInformativeText("Desenvolvido por Carlos Santana.")
         # msg.setDetailedText("Detailhes.")
-        
-        x = msg.exec_()   
+
+        x = msg.exec_()
 
 
 if __name__ == "__main__":
@@ -159,4 +216,4 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())   
