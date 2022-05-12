@@ -9,7 +9,8 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QSizePolicy, QSize, QAction, QWidget, QPushButton, QRect, QLabel, QFrame, QMenu, QMenuBar, QStatusBar
+from PyQt5.QtCore import QSize, QRect
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QSizePolicy, QAction, QWidget, QPushButton, QLabel, QFrame, QMenu, QMenuBar, QStatusBar
 from PyQt5.Qt import qRed, qGreen, qBlue, qRgb
 import numpy
 import windowrgb
@@ -58,21 +59,21 @@ class Ui_MainWindow(object):
         self.menuArquivo.setObjectName(u"menuArquivo")
         self.menuAjuda = QMenu(self.menubar)
         self.menuAjuda.setObjectName(u"menuAjuda")
-        self.menuOpera_es = QMenu(self.menubar)
-        self.menuOpera_es.setObjectName(u"menuOpera_es")
+        self.menuOperacoes = QMenu(self.menubar)
+        self.menuOperacoes.setObjectName(u"menuOpera_es")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.menubar.addAction(self.menuArquivo.menuAction())
-        self.menubar.addAction(self.menuOpera_es.menuAction())
+        self.menubar.addAction(self.menuOperacoes.menuAction())
         self.menubar.addAction(self.menuAjuda.menuAction())
         self.menuArquivo.addAction(self.actionAbrir)
         self.menuArquivo.addAction(self.actionSalvar)
         self.menuArquivo.addAction(self.actionSalvar_como)
         self.menuAjuda.addAction(self.actionSobre)
-        self.menuOpera_es.addAction(self.actionSeparador_RGB)
+        self.menuOperacoes.addAction(self.actionSeparador_RGB)
 
         self.actionAbrir.triggered.connect(self.abrir)
         self.actionSobre.triggered.connect(self.sobre)
