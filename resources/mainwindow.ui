@@ -42,7 +42,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>←</string>
     </property>
    </widget>
    <widget class="QLabel" name="foto">
@@ -106,6 +106,7 @@
      <string>Operações</string>
     </property>
     <addaction name="actionSeparador_RGB"/>
+    <addaction name="actionDesenhar"/>
    </widget>
    <addaction name="menuArquivo"/>
    <addaction name="menuOpera_es"/>
@@ -135,6 +136,11 @@
   <action name="actionSeparador_RGB">
    <property name="text">
     <string>Separador RGB</string>
+   </property>
+  </action>
+  <action name="actionDesenhar">
+   <property name="text">
+    <string>Desenhar</string>
    </property>
   </action>
  </widget>
