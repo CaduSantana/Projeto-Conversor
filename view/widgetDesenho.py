@@ -13,22 +13,42 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):
-        Form.setObjectName("Form")
-        Form.resize(400, 300)
-        self.label = QtWidgets.QLabel(Form)
-        self.label.setGeometry(QtCore.QRect(10, 10, 371, 271))
-        self.label.setObjectName("label")
+        # Form.setObjectName("Form")
+        # Form.resize(400, 300)
+        # self.label = QtWidgets.QLabel(Form)
+        # # self.label.setGeometry(QtCore.QRect(10, 10, 371, 271))
+        # canvas = QtGui.QPixmap(380, 280)
+        # canvas.fill(QtCore.Qt.white)
+        # self.label.setPixmap(canvas)
+        # self.label.setObjectName("label")
+        # # self.desenhar(self.label.mousePressEvent., canvas)
+
+        self.label = QtWidgets.QLabel()
+        canvas = QtGui.QPixmap(400, 300)
+        self.label.setGeometry(QtCore.QRect(20, 70, 700, 555))
+        self.label.setPixmap(canvas)
+        # self.label.setLayout(QtWidgets.QVBoxLayout())
+        self.draw_something()
+
+    def draw_something(self):
+        print("ayyy")
+        painter = QtGui.QPainter(self.label.pixmap())
+        painter.drawLine(10, 10, 300, 200)
+        painter.end()
+
+
+        # self.label.mousePressEvent = self.desenhar
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     # draws a red pixel on the exact spot left clicked by user mouse, and updates the label
-    def mousePressEvent(self, event):
+    def desenhar(self, event):
         x = event.x()
         y = event.y()
-        self.label.setPixmap(QtGui.QPixmap.fromImage(self.image))
-        self.image.setPixel(x, y, QtGui.QColor(255, 0, 0).rgb())
-        self.label.setPixmap(QtGui.QPixmap.fromImage(self.image))
+        # self.label.setPixmap(QtGui.QPixmap.fromImage(self.image))
+        canvas.setPixel(x, y, QtGui.QColor(255, 0, 0).rgb())
+        self.label.setPixmap(QtGui.QPixmap.fromImage(self.canvas))
 
 
     def retranslateUi(self, Form):
