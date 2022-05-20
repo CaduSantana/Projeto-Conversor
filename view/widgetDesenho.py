@@ -13,8 +13,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Form(object):
     def setupUi(self, Form):
-        # Form.setObjectName("Form")
-        # Form.resize(400, 300)
+        Form.setObjectName("Form")
+        Form.resize(400, 300)
         # self.label = QtWidgets.QLabel(Form)
         # # self.label.setGeometry(QtCore.QRect(10, 10, 371, 271))
         # canvas = QtGui.QPixmap(380, 280)
@@ -28,9 +28,9 @@ class Ui_Form(object):
         self.label.setGeometry(QtCore.QRect(20, 70, 700, 555))
         self.label.setPixmap(canvas)
         # self.label.setLayout(QtWidgets.QVBoxLayout())
-        self.draw_something()
+        self.draw_something(Form)
 
-    def draw_something(self):
+    def draw_something(self, Form):
         print("ayyy")
         painter = QtGui.QPainter(self.label.pixmap())
         painter.drawLine(10, 10, 300, 200)

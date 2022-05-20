@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import QMessageBox, QFileDialog, QSizePolicy, QAction, QWid
 from PyQt5.Qt import qRed, qGreen, qBlue, qRgb
 from PIL import Image
 import numpy as np
-import windowrgb, io
+import windowrgb, testeDesenho, io, winsound
 
 
 class Ui_MainWindow(object):
@@ -31,6 +31,7 @@ class Ui_MainWindow(object):
         MainWindow.setSizePolicy(sizePolicy)
         MainWindow.setMinimumSize(QtCore.QSize(800, 600))
         MainWindow.setMaximumSize(QtCore.QSize(800, 600))
+        MainWindow.setMouseTracking(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.button1 = QtWidgets.QPushButton(self.centralwidget)
@@ -41,6 +42,8 @@ class Ui_MainWindow(object):
         self.foto.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.foto.setText("")
         self.foto.setObjectName("foto")
+        # aligns content of label to center
+        # self.foto.setAlignment(QtCore.Qt.AlignCenter)
         self.foto_2 = QtWidgets.QLabel(self.centralwidget)
         self.foto_2.setGeometry(QtCore.QRect(410, 10, 371, 331))
         self.foto_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -72,29 +75,23 @@ class Ui_MainWindow(object):
         self.actionSeparador_RGB.setObjectName("actionSeparador_RGB")
         self.actionDesenhar = QtWidgets.QAction(MainWindow)
         self.actionDesenhar.setObjectName("actionDesenhar")
+        self.actionInverter_cores = QtWidgets.QAction(MainWindow)
+        self.actionInverter_cores.setObjectName("actionInverter_cores")
         self.menuArquivo.addAction(self.actionAbrir)
         self.menuArquivo.addAction(self.actionSalvar)
         self.menuArquivo.addAction(self.actionSalvar_como)
         self.menuAjuda.addAction(self.actionSobre)
         self.menuOperacoes.addAction(self.actionSeparador_RGB)
+        self.menuOperacoes.addAction(self.actionInverter_cores)
         self.menuOperacoes.addAction(self.actionDesenhar)
         self.menubar.addAction(self.menuArquivo.menuAction())
         self.menubar.addAction(self.menuOperacoes.menuAction())
         self.menubar.addAction(self.menuAjuda.menuAction())
-
-        self.menubar.addAction(self.menuArquivo.menuAction())
-        self.menubar.addAction(self.menuOperacoes.menuAction())
-        self.menubar.addAction(self.menuAjuda.menuAction())
-        self.menuArquivo.addAction(self.actionAbrir)
-        self.menuArquivo.addAction(self.actionSalvar)
-        self.menuArquivo.addAction(self.actionSalvar_como)
-        self.menuAjuda.addAction(self.actionSobre)
-        self.menuOperacoes.addAction(self.actionSeparador_RGB)
-        self.menuOperacoes.addAction(self.actionDesenhar)
 
         self.actionAbrir.triggered.connect(self.abrir)
         self.actionSobre.triggered.connect(self.sobre)
         self.actionSeparador_RGB.triggered.connect(self.rgb)
+        self.actionInverter_cores.triggered.connect(self.inverterCor)
         self.actionDesenhar.triggered.connect(self.desenhar)
 
         self.button1.clicked.connect(self.converterCorParaCinza)
@@ -107,7 +104,8 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.button1.setText(_translate("MainWindow", "PushButton"))
+        MainWindow.setStatusTip(_translate("MainWindow", "(0,0) R: 0, G: 0, B: 0"))
+        self.button1.setText(_translate("MainWindow", "←"))
         self.menuArquivo.setTitle(_translate("MainWindow", "Arquivo"))
         self.menuAjuda.setTitle(_translate("MainWindow", "Ajuda"))
         self.menuOperacoes.setTitle(_translate("MainWindow", "Operações"))
@@ -116,7 +114,9 @@ class Ui_MainWindow(object):
         self.actionSalvar_como.setText(_translate("MainWindow", "Salvar como..."))
         self.actionSobre.setText(_translate("MainWindow", "Sobre"))
         self.actionSeparador_RGB.setText(_translate("MainWindow", "Separador RGB"))
+        self.actionInverter_cores.setText(_translate("MainWindow", "Inverter cores"))
         self.actionDesenhar.setText(_translate("MainWindow", "Desenhar"))
+        
 
     def abrir(self):
         dlg = QFileDialog()  # cria um dialogo para selecionar o arquivo
@@ -127,15 +127,21 @@ class Ui_MainWindow(object):
 
         filename = dlg.getOpenFileName()  # abre o dialogo e armazena o nome do arquivo
         # coloca o conteudo do arquivo na textbox
-        self.foto.setPixmap(QtGui.QPixmap(filename[0]))
-        self.foto.setScaledContents(True)  # ajusta o tamanho da imagem
+        myPixmap = QtGui.QPixmap(filename[0])
+        self.foto.setPixmap(myPixmap.scaled(self.foto.size(), QtCore.Qt.KeepAspectRatio))
+        # self.foto.setAlignment(QtCore.Qt.AlignCenter) # TODO Fix this
 
-        pil_image = self.convert_qimage_to_pil(self.foto.pixmap().toImage())
-        im = pil_image.convert('RGB')
-        dados = im.tobytes("raw", "RGB")
-        qim = QtGui.QImage(dados, im.size[0], im.size[1], QtGui.QImage.Format_RGB888)       
+        # self.foto.setScaledContents(True)  # ajusta o tamanho da imagem
 
-        self.foto.setPixmap(QtGui.QPixmap.fromImage(qim))
+        # pil_image = self.convert_qimage_to_pil(self.foto.pixmap().toImage())
+        # im = pil_image.convert('RGB')
+        # dados = im.tobytes("raw", "RGB")
+        # qim = QtGui.QImage(dados, im.size[0], im.size[1], QtGui.QImage.Format_RGB888)       
+
+        # self.foto.setPixmap(QtGui.QPixmap.fromImage(qim))
+        self.foto.mouseMoveEvent = self.mouseMoveEvent
+        self.foto.setMouseTracking(True)
+
 
     #converts QImage to PIL Image
     def convert_qimage_to_pil(self, qimage):
@@ -162,8 +168,8 @@ class Ui_MainWindow(object):
                 # luminancia = (r + g + b) / 3
                 luminancia = r*0.299 + g*0.587 + b*0.114
                 image.setPixel(x, y, qRgb(round(luminancia), round(luminancia), round(luminancia))) # TODO É errado isto?
-        self.foto_2.setPixmap(QtGui.QPixmap(image))
-        self.foto_2.setScaledContents(True)
+        self.foto_2.setPixmap(QtGui.QPixmap(image.scaled(self.foto_2.size(), QtCore.Qt.KeepAspectRatio)))
+        # self.foto_2.setScaledContents(True)
 
     def inverterCor(self):
         image = self.foto.pixmap().toImage()
@@ -174,8 +180,8 @@ class Ui_MainWindow(object):
                 g = qGreen(pixel)
                 b = qBlue(pixel)
                 image.setPixel(x, y, qRgb(255-r, 255-g, 255-b))
-        self.foto_2.setPixmap(QtGui.QPixmap(image))
-        self.foto_2.setScaledContents(True)
+        self.foto_2.setPixmap(QtGui.QPixmap(image.scaled(self.foto_2.size(), QtCore.Qt.KeepAspectRatio)))
+        # self.foto_2.setScaledContents(True)
 
     # def apenasVermelho(self):
     #     image = self.foto.pixmap().toImage()
@@ -202,8 +208,8 @@ class Ui_MainWindow(object):
                 g = qGreen(pixel)
                 b = qBlue(pixel)
                 imageR.setPixel(x, y, qRgb(r, 0, 0))
-        rgbWindow.foto.setPixmap(QtGui.QPixmap(imageR))
-        rgbWindow.foto.setScaledContents(True)
+        rgbWindow.foto.setPixmap(QtGui.QPixmap(imageR.scaled(rgbWindow.foto.size(), QtCore.Qt.KeepAspectRatio)))
+        # rgbWindow.foto.setScaledContents(True)
         
         imageG = self.foto.pixmap().toImage()
         for x in range(imageG.width()):
@@ -213,8 +219,8 @@ class Ui_MainWindow(object):
                 g = qGreen(pixel)
                 b = qBlue(pixel)
                 imageG.setPixel(x, y, qRgb(0, g, 0))
-        rgbWindow.foto_2.setPixmap(QtGui.QPixmap(imageG))
-        rgbWindow.foto_2.setScaledContents(True)
+        rgbWindow.foto_2.setPixmap(QtGui.QPixmap(imageG.scaled(rgbWindow.foto_2.size(), QtCore.Qt.KeepAspectRatio)))
+        # rgbWindow.foto_2.setScaledContents(True)
         
         imageB = self.foto.pixmap().toImage()
         for x in range(imageB.width()):
@@ -224,73 +230,38 @@ class Ui_MainWindow(object):
                 g = qGreen(pixel)
                 b = qBlue(pixel)
                 imageB.setPixel(x, y, qRgb(0, 0, b))
-        rgbWindow.foto_3.setPixmap(QtGui.QPixmap(imageB))
-        rgbWindow.foto_3.setScaledContents(True)
+        rgbWindow.foto_3.setPixmap(QtGui.QPixmap(imageB.scaled(rgbWindow.foto_3.size(), QtCore.Qt.KeepAspectRatio)))
+        # rgbWindow.foto_3.setScaledContents(True)
     
         self.Form.show()
     
-    # draws a red pixel on the exact spot left clicked by user mouse, and updates the label
     def desenhar(self):
-        image = self.foto.pixmap().toImage()
-        
-        # painter = QtGui.QPainter(image)
-        # painter.drawLine(10, 10, 300, 200)
-        # painter.end()
-        # self.foto.setPixmap(QtGui.QPixmap(image))
-        # self.foto.setScaledContents(True)
-        # print("oi")
+        duration = 1000  # milliseconds
+        freq = 440  # Hz
+        winsound.Beep(freq, duration)
+        self.foto.mousePressEvent = self.mouseClickEvent
 
-        self.drawing = False
-        self.lastPoint = QtCore.QPoint()
 
-        def paintEvent(self, event):
-            if self.drawing:
-                painter = QtGui.QPainter(self.image)
-                painter.setPen(QtGui.QPen(QtCore.Qt.red, 10, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
-                painter.drawLine(self.lastPoint, event.pos())
-                self.lastPoint = event.pos()
-                self.update()
-        
-        def mousePressEvent(self, event):
-            self.drawing = True
-            self.lastPoint = event.pos()
-
-        def mouseMoveEvent(self, event):
-            self.update()
-
-        def mouseReleaseEvent(self, event):
-            self.drawing = False
-            self.update()
-        
-                
-
-        # x = event.x()
-        # y = event.y()
-        # self.foto.setPixmap(QtGui.QPixmap.fromImage(self.image))
-        # canvas.setPixel(x, y, QtGui.QColor(255, 0, 0).rgb())
-        # self.foto.setPixmap(QtGui.QPixmap.fromImage(self.canvas))
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.drawPixmap(self.rect(), self.image)
-
-    def mousePressEvent(self, event):
-        if event.button() == PyQt5.Qt.LeftButton:
-            self.drawing = True
-            self.lastPoint = event.pos()
-
+    # the following function logs the current xy coordinates of the mouse when the user hovers on the image label and prints it on the status bar
     def mouseMoveEvent(self, event):
-        if event.buttons() and Qt.LeftButton and self.drawing:
-            painter = QPainter(self.image)
-            painter.setPen(QPen(Qt.red, 3, Qt.SolidLine))
-            painter.drawLine(self.lastPoint, event.pos())
-            self.lastPoint = event.pos()
-            self.update()
+        x, y = event.pos().x(), event.pos().y()
+        ibagem = self.foto.pixmap().toImage()
+        # ibagem.save("teste.png")
+        pixel = ibagem.pixel(x, y)
+        r = qRed(pixel)
+        g = qGreen(pixel)
+        b = qBlue(pixel)
 
-    def mouseReleaseEvent(self, event):
-        if event.button == Qt.LeftButton:
-            self.drawing = False
+        self.statusbar.showMessage(
+            "({},{}) R: {}, G: {}, B: {}".format(x, y, r, g, b))
 
-
+    def mouseClickEvent(self, event):
+        x, y = event.pos().x(), event.pos().y()
+        ibagem = self.foto.pixmap().toImage()
+        ibagem.setPixel(x, y, qRgb(255, 0, 0))
+        print("foi")
+        self.foto.setPixmap(QtGui.QPixmap(ibagem.scaled(self.foto.size(), QtCore.Qt.KeepAspectRatio)))
+        
     def sobre(self):
         msg = QMessageBox()
         msg.setWindowTitle("Sobre")

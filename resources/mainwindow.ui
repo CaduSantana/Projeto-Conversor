@@ -28,8 +28,14 @@
     <height>600</height>
    </size>
   </property>
+  <property name="mouseTracking">
+   <bool>false</bool>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="statusTip">
+   <string>Teste</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="button1">
@@ -106,6 +112,7 @@
      <string>Operações</string>
     </property>
     <addaction name="actionSeparador_RGB"/>
+    <addaction name="actionInverter_cores"/>
     <addaction name="actionDesenhar"/>
    </widget>
    <addaction name="menuArquivo"/>
@@ -141,6 +148,11 @@
   <action name="actionDesenhar">
    <property name="text">
     <string>Desenhar</string>
+   </property>
+  </action>
+  <action name="actionInverter_cores">
+   <property name="text">
+    <string>Inverter cores</string>
    </property>
   </action>
  </widget>
