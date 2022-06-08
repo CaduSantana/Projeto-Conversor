@@ -114,6 +114,8 @@
     <addaction name="actionSeparador_RGB"/>
     <addaction name="actionInverter_cores"/>
     <addaction name="actionDesenhar"/>
+    <addaction name="actionConverter_de_RGB_para_HSL"/>
+    <addaction name="actionConverter_de_HSL_para_RGB"/>
    </widget>
    <addaction name="menuArquivo"/>
    <addaction name="menuOpera_es"/>
@@ -153,6 +155,16 @@
   <action name="actionInverter_cores">
    <property name="text">
     <string>Inverter cores</string>
+   </property>
+  </action>
+  <action name="actionConverter_de_RGB_para_HSL">
+   <property name="text">
+    <string>Converter de RGB para HSL</string>
+   </property>
+  </action>
+  <action name="actionConverter_de_HSL_para_RGB">
+   <property name="text">
+    <string>Converter de HSL para RGB</string>
    </property>
   </action>
  </widget>
