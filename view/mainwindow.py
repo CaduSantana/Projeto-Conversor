@@ -82,6 +82,8 @@ class Ui_MainWindow(object):
         self.actionConverter_de_RGB_para_HSL.setObjectName("actionConverter_de_RGB_para_HSL")
         self.actionConverter_de_HSL_para_RGB = QtWidgets.QAction(MainWindow)
         self.actionConverter_de_HSL_para_RGB.setObjectName("actionConverter_de_HSL_para_RGB")
+        self.actionDCT = QtWidgets.QAction(MainWindow)
+        self.actionDCT.setObjectName("actionDCT")
         self.menuArquivo.addAction(self.actionAbrir)
         self.menuArquivo.addAction(self.actionSalvar)
         self.menuArquivo.addAction(self.actionSalvar_como)
@@ -91,6 +93,7 @@ class Ui_MainWindow(object):
         self.menuOperacoes.addAction(self.actionDesenhar)
         self.menuOperacoes.addAction(self.actionConverter_de_RGB_para_HSL)
         self.menuOperacoes.addAction(self.actionConverter_de_HSL_para_RGB)
+        self.menuOperacoes.addAction(self.actionDCT)
         self.menubar.addAction(self.menuArquivo.menuAction())
         self.menubar.addAction(self.menuOperacoes.menuAction())
         self.menubar.addAction(self.menuAjuda.menuAction())
@@ -101,8 +104,9 @@ class Ui_MainWindow(object):
         self.actionInverter_cores.triggered.connect(self.inverterCor)
         self.actionDesenhar.triggered.connect(self.desenhar)
         self.actionConverter_de_RGB_para_HSL.triggered.connect(self.insertColorValues)
+        # self.actionDCT.triggered.connect(self.discrete_cosine_transform)
 
-        self.convert_HSV_to_RGB(111, 140, 120)
+        # self.convert_HSV_to_RGB(111, 140, 120)
 
         self.button1.clicked.connect(self.converterCorParaCinza)
         # self.button1.clicked.connect(self.inverterCor)
@@ -128,6 +132,7 @@ class Ui_MainWindow(object):
         self.actionDesenhar.setText(_translate("MainWindow", "Desenhar"))
         self.actionConverter_de_RGB_para_HSL.setText(_translate("MainWindow", "Converter de RGB para HSL"))
         self.actionConverter_de_HSL_para_RGB.setText(_translate("MainWindow", "Converter de HSL para RGB"))
+        self.actionDCT.setText(_translate("MainWindow", "DCT"))
         
 
     def abrir(self):
@@ -274,65 +279,36 @@ class Ui_MainWindow(object):
         print("foi")
         self.foto.setPixmap(QtGui.QPixmap(ibagem.scaled(self.foto.size(), QtCore.Qt.KeepAspectRatio)))
     
-    def convert_RGB_to_HSV(self, r, g, b):
-        r, g, b = r/255.0, g/255.0, b/255.0 # Divida tudo por 255
-        mx = max(r, g, b) # Encontre os máximos e os mínimos das cores
-        mn = min(r, g, b)
-        luminance = (mx + mn) / 2.0
-        if mx == mn:
-            hue = 0
-            saturation = 0
-        if luminance <= 0.5:
-            saturation = (mx - mn) / (mx + mn)
-        else:
-            saturation = (mx - mn) / (2.0 - mx - mn)
-        if mx == r:
-            hue = (g - b) / (mx - mn)
-        elif mx == g:
-            hue = 2.0 + (b - r) / (mx - mn)
-        else:
-            hue = 4.0 + (r - g) / (mx - mn)
-        hue *= 60.0
-        if hue < 0:
-            hue += 360
-        print((floor(hue *  (2 / 3)), floor(saturation*240), floor(luminance * 240)))
-
-    def convert_HSV_to_RGB(self, h, s, v):
-        h, s, v = h/240.0, s/240.0, v/240.0
-        c = v * s
-        x = c * (1 - abs((h / 60.0) % 2 - 1))
-        m = v - c
-        if h < 60:
-            r, g, b = c, x, 0
-        elif h < 120:
-            r, g, b = x, c, 0
-        elif h < 180:
-            r, g, b = 0, c, x
-        elif h < 240:
-            r, g, b = 0, x, c
-        elif h < 300:
-            r, g, b = x, 0, c
-        else:
-            r, g, b = c, 0, x
-        r, g, b = (r + m) * 255, (g + m) * 255, (b + m) * 255
-        print(r, g, b)
-
-
-    def showNewColorValues(self, x1, x2, x3):
-        msg = QMessageBox()
-        if inspect.stack()[1].function == 'convert_RGB_to_HSV':
-            msg.setWindowTitle("Valores de H, S e V")
-        if inspect.stack()[1].function == 'convert_HSV_to_RGB':
-            msg.setWindowTitle("Valores de R, G e B")
-        msg.setText("H: {}\nS: {}\nV: {}".format(x1, x2, x3))
-        msg.setStandardButtons(QMessageBox.Ok)
-        x = msg.exec_()
-
     def insertColorValues(self):
         self.Form = QtWidgets.QWidget()
         colorWindow = rgb_to_hsl.Ui_Dialog_RGB_to_HSL()
         colorWindow.setupUi(self.Form)
         self.Form.show()
+
+    # def discrete_cosine_transform(self):
+    #     # This function aplies DCT on a given image
+    #     # The image is converted to a matrix and then the DCT is applied
+    #     # The result is converted back to a image and then it is shown on the screen
+        
+    #     ibagem = open('city.jpg', 'rb')
+    #     image = Image.open(ibagem)
+    #     image = image.convert('RGB')
+    #     image = np.array(image)
+
+    #     c = np.array.reshape(128,128)
+
+    #     for i in range(image.width-1): # Iterate over the rows
+    #         for x in range(image.width()):
+    #             for y in range(image.height()):
+    #                 pixel = image.pixel(x, y)
+    #                 r = qRed(pixel)
+    #                 g = qGreen(pixel)
+    #                 b = qBlue(pixel)
+    #                 c[x][y] = np.cos((2 * x + 1) * (y + 0.5) * np.pi / (2 * image.width()))
+    #     imabe = Image.fromarray(c)
+    #     imabe.show()
+
+
 
 
     # def newColors(self):
