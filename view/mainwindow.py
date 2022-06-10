@@ -20,6 +20,10 @@ from PIL import Image
 import numpy as np
 import windowrgb, rgb_to_hsl, testeDesenho, io, winsound, inspect
 from math import floor
+import matplotlib.pyplot as plt
+import skimage.color
+import skimage.io
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -80,8 +84,8 @@ class Ui_MainWindow(object):
         self.actionInverter_cores.setObjectName("actionInverter_cores")
         self.actionConverter_de_RGB_para_HSL = QtWidgets.QAction(MainWindow)
         self.actionConverter_de_RGB_para_HSL.setObjectName("actionConverter_de_RGB_para_HSL")
-        self.actionConverter_de_HSL_para_RGB = QtWidgets.QAction(MainWindow)
-        self.actionConverter_de_HSL_para_RGB.setObjectName("actionConverter_de_HSL_para_RGB")
+        self.actionEqualizar_Histograma = QtWidgets.QAction(MainWindow)
+        self.actionEqualizar_Histograma.setObjectName("actionEqualizar_Histograma")
         self.actionDCT = QtWidgets.QAction(MainWindow)
         self.actionDCT.setObjectName("actionDCT")
         self.menuArquivo.addAction(self.actionAbrir)
@@ -92,7 +96,7 @@ class Ui_MainWindow(object):
         self.menuOperacoes.addAction(self.actionInverter_cores)
         self.menuOperacoes.addAction(self.actionDesenhar)
         self.menuOperacoes.addAction(self.actionConverter_de_RGB_para_HSL)
-        self.menuOperacoes.addAction(self.actionConverter_de_HSL_para_RGB)
+        self.menuOperacoes.addAction(self.actionEqualizar_Histograma)
         self.menuOperacoes.addAction(self.actionDCT)
         self.menubar.addAction(self.menuArquivo.menuAction())
         self.menubar.addAction(self.menuOperacoes.menuAction())
@@ -104,6 +108,7 @@ class Ui_MainWindow(object):
         self.actionInverter_cores.triggered.connect(self.inverterCor)
         self.actionDesenhar.triggered.connect(self.desenhar)
         self.actionConverter_de_RGB_para_HSL.triggered.connect(self.insertColorValues)
+        self.actionEqualizar_Histograma.triggered.connect(self.histogram)
         # self.actionDCT.triggered.connect(self.discrete_cosine_transform)
 
         # self.convert_HSV_to_RGB(111, 140, 120)
@@ -130,8 +135,8 @@ class Ui_MainWindow(object):
         self.actionSeparador_RGB.setText(_translate("MainWindow", "Separador RGB"))
         self.actionInverter_cores.setText(_translate("MainWindow", "Inverter cores"))
         self.actionDesenhar.setText(_translate("MainWindow", "Desenhar"))
-        self.actionConverter_de_RGB_para_HSL.setText(_translate("MainWindow", "Converter de RGB para HSL"))
-        self.actionConverter_de_HSL_para_RGB.setText(_translate("MainWindow", "Converter de HSL para RGB"))
+        self.actionConverter_de_RGB_para_HSL.setText(_translate("MainWindow", "Conversor RGB/HSL"))
+        self.actionEqualizar_Histograma.setText(_translate("MainWindow", "Equalizar histograma"))
         self.actionDCT.setText(_translate("MainWindow", "DCT"))
         
 
@@ -184,7 +189,7 @@ class Ui_MainWindow(object):
                 b = qBlue(pixel)
                 # luminancia = (r + g + b) / 3
                 luminancia = r*0.299 + g*0.587 + b*0.114
-                image.setPixel(x, y, qRgb(round(luminancia), round(luminancia), round(luminancia))) # TODO É errado isto?
+                image.setPixel(x, y, qRgb(round(luminancia), round(luminancia), round(luminancia)))
         self.foto_2.setPixmap(QtGui.QPixmap(image.scaled(self.foto_2.size(), QtCore.Qt.KeepAspectRatio)))
         # self.foto_2.setScaledContents(True)
 
@@ -284,6 +289,38 @@ class Ui_MainWindow(object):
         colorWindow = rgb_to_hsl.Ui_Dialog_RGB_to_HSL()
         colorWindow.setupUi(self.Form)
         self.Form.show()
+
+    def equalize_image_histogram(self):
+        image = self.foto_2.pixmap().toImage()
+        image_histogram = image.copy()
+        # image_histogram.fill(QtCore.Qt.black)
+        for x in range(image.width()):
+            for y in range(image.height()):
+                pixel = image.pixel(x, y)
+                r = qRed(pixel)
+                g = qGreen(pixel)
+                b = qBlue(pixel)
+                image_histogram.setPixel(x, y, qRgb(r, g, b))
+        image_histogram.save("teste.png")
+        self.foto_2.setPixmap(QtGui.QPixmap(image_histogram.scaled(self.foto_2.size(), QtCore.Qt.KeepAspectRatio)))
+        self.histogram()
+        # self.foto_2.setScaledContents(True)
+
+    def histogram(self):
+        self.foto_2.pixmap().toImage().save("temp.png")
+        ibagem = skimage.io.imread(fname="temp.png", as_gray=True)
+        # image_histogram = ibagem.copy()
+        fig, ax = plt.subplots()
+        histogram, bin_edges = np.histogram(ibagem, bins=256, range=(0, 1))
+        plt.figure()
+        plt.title("Grayscale Histogram")
+        plt.xlabel("grayscale value")
+        plt.ylabel("pixel count")
+        plt.xlim([0.0, 1.0])  # <- named arguments do not work here
+
+        plt.plot(bin_edges[0:-1], histogram)  # <- or here
+        plt.show()
+
 
     # def discrete_cosine_transform(self):
     #     # This function aplies DCT on a given image
