@@ -285,15 +285,15 @@ class Ui_MainWindow(object):
         self.foto.setPixmap(QtGui.QPixmap(ibagem.scaled(self.foto.size(), QtCore.Qt.KeepAspectRatio)))
     
     def insertColorValues(self):
-        self.Form = QtWidgets.QWidget()
-        colorWindow = rgb_to_hsl.Ui_Dialog_RGB_to_HSL()
-        colorWindow.setupUi(self.Form)
-        self.Form.show()
+        conversor = rgb_to_hsl.Ui_Dialog_RGB_to_HSL()
+        MainWindow.addWidget(conversor)
+        MainWindow.setCurrentIndex(MainWindow.currentIndex()+1) 
+        MainWindow.removeWidget(self)
 
     def equalize_image_histogram(self):
         image = self.foto_2.pixmap().toImage()
         image_histogram = image.copy()
-        # image_histogram.fill(QtCore.Qt.black)
+        image_histogram.fill(QtCore.Qt.black)
         for x in range(image.width()):
             for y in range(image.height()):
                 pixel = image.pixel(x, y)
@@ -308,9 +308,8 @@ class Ui_MainWindow(object):
 
     def histogram(self):
         self.foto_2.pixmap().toImage().save("temp.png")
-        ibagem = skimage.io.imread(fname="temp.png", as_gray=True)
+        ibagem = skimage.io.imread(fname="temp.png")
         # image_histogram = ibagem.copy()
-        fig, ax = plt.subplots()
         histogram, bin_edges = np.histogram(ibagem, bins=256, range=(0, 1))
         plt.figure()
         plt.title("Grayscale Histogram")
@@ -344,30 +343,6 @@ class Ui_MainWindow(object):
     #                 c[x][y] = np.cos((2 * x + 1) * (y + 0.5) * np.pi / (2 * image.width()))
     #     imabe = Image.fromarray(c)
     #     imabe.show()
-
-
-
-
-    # def newColors(self):
-    #     image = self.foto.pixmap().toImage()
-    #     for x in range(image.width()):
-    #         for y in range(image.height()):
-    #             pixel = image.pixel(x, y)
-    #             r = qRed(pixel)
-    #             g = qGreen(pixel)
-    #             b = qBlue(pixel)
-    #             h, s, v = self.convert_RGB_to_HSV(r, g, b)
-    #             image.setPixel(x, y, qRgb(h, s, v))
-    #     self.foto_2.setPixmap(QtGui.QPixmap(image.scaled(self.foto_2.size(), QtCore.Qt.KeepAspectRatio)))
-    #     # self.foto_2.setScaledContents(True)
-        
-    #     # Abaixo segue a explicitação dos valores resultantes da conversão
-    #     msg = QMessageBox()
-    #     msg.setWindowTitle("Valores de H, S e V")
-    #     msg.setText("H: {}\nS: {}\nV: {}".format(h, s, v))
-    #     msg.setIcon(QMessageBox.Information)
-    #     msg.setStandardButtons(QMessageBox.Ok)
-    #     x = msg.exec_()
 
 
         

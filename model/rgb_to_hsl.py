@@ -10,9 +10,17 @@
 
 import colorsys
 import math
-from PyQt5 import QtCore, QtGui, QtWidgets
+import os
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
 
 class Ui_Dialog_RGB_to_HSL(object):
+    def __init__(self):
+        super(Ui_Dialog_RGB_to_HSL, self).__init__()
+        uic.loadUi("."+os.path.sep+"resources"+os.path.sep+"rgb_to_hsl.ui", self)
+        self.radioButton.toggled.connect(self.rgb2hsl)
+        self.radioButton_2.toggled.connect(self.hsl2rgb)
+        self.pushButton.clicked.connect(self.conversor)
+
     def setupUi(self, Dialog_RGB_to_HSL):
         Dialog_RGB_to_HSL.setObjectName("Dialog_RGB_to_HSL")
         Dialog_RGB_to_HSL.resize(202, 128)
@@ -73,9 +81,7 @@ class Ui_Dialog_RGB_to_HSL(object):
         self.radioButton_2.setGeometry(QtCore.QRect(0, 30, 82, 17))
         self.radioButton_2.setObjectName("radioButton_2")
         
-        self.radioButton.toggled.connect(self.rgb2hsl)
-        self.radioButton_2.toggled.connect(self.hsl2rgb)
-        self.pushButton.clicked.connect(self.conversor)
+
 
         self.retranslateUi(Dialog_RGB_to_HSL)
 
@@ -118,44 +124,60 @@ class Ui_Dialog_RGB_to_HSL(object):
         return((math.floor(hue *  (2 / 3)), math.floor(saturation*240), math.floor(luminance * 240)))
     
     def convert_HSL_to_RGB(self, h, s, l):
-        h, s, l = h/360, s/100.0, l / 100.0
-        if s == 0:
-            l = l * 255
-            return(l, l, l)
-        # h = h / 360.0
-        # s = s / 255.0
-        if l < 0.5:
-            q = l * (1 + s)
-        if l >= 0.5:
-            q = (l + s) - (l * s)
-        p = 2 * l - q
-        h = h / 360.0
-        r = h + 1.0 / 3.0
-        g = h
-        b = h - 1.0 / 3.0
-        if r*6 < 0:
-            r = r + 1
-        if r*2 > 1:
-            r = q
-        if r*3 < 2:
-            r = p + (q - p) * (2.0 / 3.0 - r) * 6.0
-        if g*6 < 0:
-            g = g + 1
-        if g*2 > 1:
-            g = q
-        if g*3 < 2:
-            g = p + (q - p) * (2.0 / 3.0 - g) * 6.0
-        if b*6 < 0:
-            b = b + 1
-        if b*2 > 1:
-            b = q
-        if b*3 < 2:
-            b = p + (q - p) * (2.0 / 3.0 - b) * 6.0
-        return(math.floor(r * 255), math.floor(g * 255), math.floor(b * 255))
+        f1 = self.numLen(h) 
+        f2 = self.numLen(s) 
+        f3 = self.numLen(l) 
+        if( (f1>=1 and f1<=3) and (f2>=1 and f2<=3) and (f3>=1 and f3<=3) ):
+            r, g, b = self.hue2rgb(h, s, l)
+            return (r, g, b)
 
-    def hue2rgb(self, n, h, s, l):
-        k = (n + h / 3.0) % 12
-        return math.floor((l - (s * min(l, 1 - l)) * max(-1, min({k - 3, 9 - k, 1}))) * 255)
+    def hue2rgb(self, h, s, l):
+        s/=240
+        l/=240
+
+        c = (1-abs(2*l-1)) * s
+        x = c * (1 - abs((h/40) % 2-1))
+
+        m = l - c/2
+        r = 0
+        g = 0
+        b = 0
+        
+        if(h<=0 and h<40):
+            r = c
+            g = x
+            b = 0
+
+        elif (h<=40 and h<80):
+            r = x
+            g = c
+            b = 0
+        
+        elif(h<=80 and h<120):
+            r = 0
+            g = c
+            b = x
+        
+        elif(h<=120 and h<160):
+            r = 0
+            g = x
+            b = c
+        
+        elif(h<=160 and h<200):
+            r = x
+            g = 0
+            b = c
+        
+        elif(h<=200 and h<240):
+            r = c
+            g = 0
+            b = x
+
+        r = round((r+m)*255)
+        g = round((g+m)*255)
+        b = round((b+m)*255)
+
+        return (b, g, r)
 
     def conversor(self):
         if self.mode == 0:
@@ -205,6 +227,17 @@ class Ui_Dialog_RGB_to_HSL(object):
         self.lineEdit_5.setText("")
         self.lineEdit_6.setText("")
         self.mode = 1
+
+    def numLen(self, num):
+        num = abs(int(num))
+        if num < 2:
+            return 1
+        count = 0
+        value = 1
+        while value <= num:
+            value *= 10
+            count += 1
+        return count
 
 if __name__ == "__main__":
     import sys
